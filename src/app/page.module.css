@@ -589,6 +589,12 @@
   border-top: 1px solid #edf2f7;
 }
 
+.privacyStatement {
+  margin-top: 0.75rem;
+  color: #718096;
+  font-size: 0.85rem;
+}
+
 /* 操作指南图片样式 */
 .imageContainer {
   margin: 1rem 0;

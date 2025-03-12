@@ -257,6 +257,7 @@ export default function Home() {
           
           <div className={styles.footer}>
             <p>Join Workshop © {new Date().getFullYear()}</p>
+            <p className={styles.privacyStatement}>隐私声明：本工具不收集或存留任何个人隐私数据，工作坊结束后将关闭站点结束服务。</p>
           </div>
         </div>
       </div>
