@@ -1,9 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Octokit } from '@octokit/core';
-
-const octokit = new Octokit({
-  auth: process.env.GITHUB_AUTH_TOKEN
-});
+import { createOctokit, listTeamMembers } from '@/lib/github';
 
 export async function GET() {
   const orgName = process.env.GITHUB_ORG_NAME;
@@ -17,19 +13,17 @@ export async function GET() {
   }
 
   try {
-    const response = await octokit.request(`GET /orgs/${orgName}/teams/${teamName}/members`, {
-      org: orgName,
-      team_slug: teamName,
-      per_page: 100,
-      headers: {
-        'X-GitHub-Api-Version': '2022-11-28'
-      }
-    });
-    return NextResponse.json(response.data);
-  } catch (error) {
-    console.error('Error listing team members:', error);
+    const octokit = createOctokit();
+    const members = await listTeamMembers(octokit, orgName, teamName);
+    return NextResponse.json(members);
+  } catch (error: any) {
+    console.error('获取团队成员列表失败:', error);
+    let errorMessage = '获取团队成员列表失败';
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    }
     return NextResponse.json(
-      { error: '获取团队成员列表失败' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Octokit } from "@octokit/core";
+import { createOctokit, inviteTeamMember, getTeamByName, listTeamMembers } from "@/lib/github";
 
 interface InviteRequestBody {
   username: string;
@@ -11,53 +11,62 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const { username } = body;
     
     if (!username) {
-      return NextResponse.json({ error: "Username is required" }, { status: 400 });
+      return NextResponse.json({ error: "用户名是必须的" }, { status: 400 });
     }
 
-    const octokit = new Octokit({
-      auth: process.env.GITHUB_TOKEN,
-    });
-
-    const orgName = process.env.GITHUB_ORG as string;
-    const teamName = process.env.GITHUB_TEAM as string;
+    // 获取环境变量
+    const orgName = process.env.GITHUB_ORG_NAME;
+    const teamName = process.env.GITHUB_TEAM_NAME;
+    
+    if (!orgName || !teamName) {
+      return NextResponse.json({ error: "环境变量未正确配置" }, { status: 500 });
+    }
+    
+    // 创建 Octokit 实例
+    const octokit = createOctokit();
 
     try {
-      // Get team ID
-      const teamsResponse = await octokit.request('GET /orgs/{org}/teams', {
-        org: orgName
-      });
+      // 获取团队信息
+      const team = await getTeamByName(octokit, orgName, teamName);
       
-      // Find the team by name
-      const team = teamsResponse.data.find(team => team.name === teamName);
-      
-      if (!team) {
-        return NextResponse.json({ error: `Team ${teamName} not found` }, { status: 404 });
+      // 邀请用户加入团队
+      try {
+        await inviteTeamMember(octokit, orgName, team.slug, username);
+      } catch (error: any) {
+        console.error("邀请用户失败:", error);
+        let errorMessage = '邀请用户失败';
+        if (error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        }
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
       }
 
-      // Invite user to organization
-      await octokit.request('POST /orgs/{org}/invitations', {
-        org: orgName,
-        email: undefined, // Use undefined instead of null
-        role: 'direct_member',
-        team_ids: [team.id],
-        invitee_id: undefined, // Use undefined instead of null
-        invitee_username: username 
-      });
+      // 获取团队成员列表
+      try {
+        const members = await listTeamMembers(octokit, orgName, team.slug);
+        console.log(`团队 ${teamName} 的成员:`, members.map((m: any) => m.login));
+      } catch (error) {
+        console.error("获取团队成员失败:", error);
+        // 获取成员失败不应阻止成功的邀请响应
+      }
 
       return NextResponse.json({ 
         success: true,
-        message: `Successfully invited ${username} to ${orgName}`
+        message: `成功邀请 ${username} 加入团队 ${teamName}`
       });
 
-    } catch (error) {
-      console.error("GitHub API error:", error);
-      return NextResponse.json({ 
-        error: "Failed to invite user to organization" 
-      }, { status: 500 });
+    } catch (error: any) {
+      console.error("GitHub API 错误:", error);
+      let errorMessage = '操作失败';
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
-
   } catch (error) {
-    console.error("Server error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error("服务器错误:", error);
+    return NextResponse.json({ error: "服务器内部错误" }, { status: 500 });
   }
 }
