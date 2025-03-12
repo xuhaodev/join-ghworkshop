@@ -38,7 +38,7 @@ export default function Home() {
       const response = await fetch('/api/config');
       const data = await response.json();
       setConfig(data);
-    } catch (_error) {
+    } catch (_) {
       setMessage('获取配置信息失败');
     }
   };
@@ -55,7 +55,7 @@ export default function Home() {
         setMessage('获取成员列表失败');
         console.error('Expected array but received:', data);
       }
-    } catch (_error) {
+    } catch (_) {
       setMessage('获取成员列表失败');
     }
   };
@@ -83,7 +83,7 @@ export default function Home() {
       } else {
         setMessage(data.error || '邀请失败');
       }
-    } catch (_error) {
+    } catch (_) {
       setMessage('邀请过程中发生错误');
     } finally {
       setLoading(false);
@@ -162,7 +162,7 @@ export default function Home() {
                             </div>
                           </li>
                           <li>
-                            <strong>3.2 点击接受</strong> - 在组织页面中找到邀请后点击"接受邀请"
+                            <strong>3.2 点击接受</strong> - 在组织页面中找到邀请后点击&quot;接受邀请&quot;
                             <div className={styles.imageContainer}>
                               <Image 
                                 src="/clickAccept.jpg" 
@@ -174,7 +174,7 @@ export default function Home() {
                             </div>
                           </li>
                           <li>
-                            <strong>3.3 点击加入</strong> - 接受邀请后，点击"加入"以完成加入流程（不用勾选 Ask for ...）
+                            <strong>3.3 点击加入</strong> - 接受邀请后，点击&quot;加入&quot;以完成加入流程（不用勾选 Ask for ...）
                             <div className={styles.imageContainer}>
                               <Image 
                                 src="/clickJoin.jpg" 

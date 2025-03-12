@@ -1,48 +1,76 @@
-import { NextResponse } from 'next/server';
-import { Octokit } from '@octokit/core';
+import { NextRequest, NextResponse } from "next/server";
+import { Octokit } from "@octokit/core";
 
-const octokit = new Octokit({
-  auth: process.env.GITHUB_AUTH_TOKEN
-});
+// Define proper types instead of using 'any'
+interface InviteRequestBody {
+  username: string;
+}
 
-export async function POST(request: Request) {
-  const orgName = process.env.GITHUB_ORG_NAME;
-  const teamName = process.env.GITHUB_TEAM_NAME;
+interface APIErrorResponse {
+  error: string;
+  message?: string;
+  documentation_url?: string;
+}
 
-  if (!orgName || !teamName) {
-    return NextResponse.json(
-      { error: '环境变量未正确配置' },
-      { status: 500 }
-    );
-  }
+interface APISuccessResponse {
+  success: boolean;
+  message?: string;
+}
 
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    const { username } = await request.json();
+    const body = await request.json() as InviteRequestBody;
+    const { username } = body;
     
     if (!username) {
-      return NextResponse.json(
-        { error: '用户名不能为空' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Username is required" }, { status: 400 });
     }
 
-    const response = await octokit.request(`PUT /orgs/${orgName}/teams/${teamName}/memberships/${username}`, {
-      org: orgName,
-      team_slug: teamName,
-      username: username,
-      role: 'member',
-      headers: {
-        'X-GitHub-Api-Version': '2022-11-28'
-      }
+    const octokit = new Octokit({
+      auth: process.env.GITHUB_TOKEN,
     });
 
-    return NextResponse.json({ success: true, data: response.data });
-  } catch (error: any) {
-    console.error('Error inviting team member:', error);
-    const errorMessage = error.response?.data?.message || '邀请用户失败';
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    const orgName = process.env.GITHUB_ORG as string;
+    const teamName = process.env.GITHUB_TEAM as string;
+
+    try {
+      // Get team ID
+      const teamsResponse = await octokit.request('GET /orgs/{org}/teams', {
+        org: orgName
+      });
+      
+      // Find the team by name
+      const team = teamsResponse.data.find(team => team.name === teamName);
+      
+      if (!team) {
+        return NextResponse.json({ error: `Team ${teamName} not found` }, { status: 404 });
+      }
+
+      // Invite user to organization
+      await octokit.request('POST /orgs/{org}/invitations', {
+        org: orgName,
+        email: undefined,
+        role: 'direct_member',
+        team_ids: [team.id],
+        invitee_id: undefined,
+        invitee_username: username 
+      });
+
+      return NextResponse.json({ 
+        success: true,
+        message: `Successfully invited ${username} to ${orgName}`
+      });
+
+    } catch (error) {
+      const apiError = error as APIErrorResponse;
+      console.error("GitHub API error:", apiError);
+      return NextResponse.json({ 
+        error: apiError.message || "Failed to invite user to organization" 
+      }, { status: 500 });
+    }
+
+  } catch (error) {
+    console.error("Server error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
