@@ -1,12 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createOctokit, inviteTeamMember, getTeamByName, listTeamMembers } from "@/lib/github";
-import { OctokitError } from '../../../types/github';
 
 interface InviteRequestBody {
   username: string;
 }
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
+export async function POST(request: Request) {
   try {
     const body = await request.json() as InviteRequestBody;
     const { username } = body;
