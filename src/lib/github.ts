@@ -19,8 +19,11 @@ export async function listTeamMembers(octokit: Octokit, org: string, team: strin
       }
     });
     return response.data;
-  } catch (error) {
-    console.error('获取团队成员失败:', error.response ? error.response.data : error.message);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? 
+      (error as any).response?.data || error.message : 
+      'Unknown error';
+    console.error('获取团队成员失败:', errorMessage);
     throw error;
   }
 }
@@ -39,8 +42,11 @@ export async function inviteTeamMember(octokit: Octokit, orgName: string, teamNa
     });
     console.log('成功邀请团队成员:', response.data);
     return response.data;
-  } catch (error) {
-    console.error('邀请团队成员失败:', error.response ? error.response.data : error.message);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? 
+      (error as any).response?.data || error.message : 
+      'Unknown error';
+    console.error('邀请团队成员失败:', errorMessage);
     throw error;
   }
 }
@@ -58,8 +64,11 @@ export async function getTeamByName(octokit: Octokit, orgName: string, teamName:
     }
     
     return team;
-  } catch (error) {
-    console.error('获取团队信息失败:', error.response ? error.response.data : error.message);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? 
+      (error as any).response?.data || error.message : 
+      'Unknown error';
+    console.error('获取团队信息失败:', errorMessage);
     throw error;
   }
 }
@@ -74,8 +83,11 @@ export async function listAssignedSeats(octokit: Octokit, orgName: string) {
       }
     });
     return response.data;
-  } catch (error) {
-    console.error('获取席位分配失败:', error.response ? error.response.data : error.message);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? 
+      (error as any).response?.data || error.message : 
+      'Unknown error';
+    console.error('获取席位分配失败:', errorMessage);
     throw error;
   }
 }
