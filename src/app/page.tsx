@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import styles from './page.module.css';
 
 // Define interface for member objects
@@ -37,7 +38,7 @@ export default function Home() {
       const response = await fetch('/api/config');
       const data = await response.json();
       setConfig(data);
-    } catch (error) {
+    } catch (_error) {
       setMessage('获取配置信息失败');
     }
   };
@@ -54,7 +55,7 @@ export default function Home() {
         setMessage('获取成员列表失败');
         console.error('Expected array but received:', data);
       }
-    } catch (error) {
+    } catch (_error) {
       setMessage('获取成员列表失败');
     }
   };
@@ -82,7 +83,7 @@ export default function Home() {
       } else {
         setMessage(data.error || '邀请失败');
       }
-    } catch (error) {
+    } catch (_error) {
       setMessage('邀请过程中发生错误');
     } finally {
       setLoading(false);
@@ -118,7 +119,7 @@ export default function Home() {
               
               <div className={styles.introduction}>
                 <h2>Workshop自服务添加工具</h2>
-                <p>本工具帮助您快速加入 Workshop，获取 Workshop 相关内容和工具试用权限。输入您的 GitHub 用户名并点击"加入工作坊"按钮即可加入。</p>
+                <p>本工具帮助您快速加入 Workshop，获取 Workshop 相关内容和工具试用权限。输入您的 GitHub 用户名并点击&quot;加入工作坊&quot;按钮即可加入。</p>
                 <button 
                   className={styles.guideButton} 
                   onClick={() => setShowGuide(!showGuide)}
@@ -133,64 +134,74 @@ export default function Home() {
                       <li>
                         <strong>第一步：输入 GitHub 用户名</strong> - 在输入框中填写您的 GitHub 用户名（不是邮箱，不需要@符号）
                         <div className={styles.imageContainer}>
-                          <img 
+                          <Image 
                             src="/userName.jpg" 
                             alt="输入GitHub用户名" 
-                            className={styles.guideImage} 
+                            className={styles.guideImage}
+                            width={500}
+                            height={300}
                           />
                         </div>
                       </li>
                       <li>
-                        <strong>第二步：点击右侧"加入工作坊"</strong> - 系统将向您的 GitHub 账户发送邀请
+                        <strong>第二步：点击右侧&quot;加入工作坊&quot;</strong> - 系统将向您的 GitHub 账户发送邀请
                       </li>
-                        <li>
+                      <li>
                         <strong>第三步：接受邀请</strong>
                         <ol>
                           <li>
-                          <strong>3.1 进入GitHub.com, 选择组织</strong> - 请进入您的 GitHub.com 后，在组织页面中选择您的组织
-                          <div className={styles.imageContainer}>
-                            <img 
-                            src="/clickOrg.jpg" 
-                            alt="选择组织" 
-                            className={styles.guideImage} 
-                            />
-                          </div>
+                            <strong>3.1 进入GitHub.com, 选择组织</strong> - 请进入您的 GitHub.com 后，在组织页面中选择您的组织
+                            <div className={styles.imageContainer}>
+                              <Image 
+                                src="/clickOrg.jpg" 
+                                alt="选择组织" 
+                                className={styles.guideImage}
+                                width={500}
+                                height={300}
+                              />
+                            </div>
                           </li>
                           <li>
-                          <strong>3.2 点击接受</strong> - 在组织页面中找到邀请后点击“接受邀请”
-                          <div className={styles.imageContainer}>
-                            <img 
-                            src="/clickAccept.jpg" 
-                            alt="点击接受邀请" 
-                            className={styles.guideImage} 
-                            />
-                          </div>
+                            <strong>3.2 点击接受</strong> - 在组织页面中找到邀请后点击"接受邀请"
+                            <div className={styles.imageContainer}>
+                              <Image 
+                                src="/clickAccept.jpg" 
+                                alt="点击接受邀请" 
+                                className={styles.guideImage}
+                                width={500}
+                                height={300}
+                              />
+                            </div>
                           </li>
                           <li>
-                          <strong>3.3 点击加入</strong> - 接受邀请后，点击“加入”以完成加入流程（不用勾选 Ask for ...）
-                          <div className={styles.imageContainer}>
-                            <img 
-                            src="/clickJoin.jpg" 
-                            alt="点击加入团队" 
-                            className={styles.guideImage} 
-                            />
-                          </div>
+                            <strong>3.3 点击加入</strong> - 接受邀请后，点击"加入"以完成加入流程（不用勾选 Ask for ...）
+                            <div className={styles.imageContainer}>
+                              <Image 
+                                src="/clickJoin.jpg" 
+                                alt="点击加入团队" 
+                                className={styles.guideImage}
+                                width={500}
+                                height={300}
+                              />
+                            </div>
                           </li>
                         </ol>
-                        </li>
+                      </li>
                       <li>
                         <strong>第四步：登录并使用</strong> - 安装GitHub Copilot插件，在IDE中登录您的GitHub账户即可使用。
                         <div className={styles.imageContainer}>
-                          <img 
+                          <Image 
                             src="/login.jpg" 
                             alt="登录Copilot" 
-                            className={styles.guideImage} 
+                            className={styles.guideImage}
+                            width={500}
+                            height={300}
                           />
                         </div>
                       </li>
                       <li><strong>开始使用</strong> - 在您的代码编辑器中安装 GitHub Copilot 插件，开始使用 AI 辅助编码</li>
                     </ol>
-                    <p className={styles.noteText}>注意：邀请成功后，您的用户名将显示在"已加入账户"列表中。</p>
+                    <p className={styles.noteText}>注意：邀请成功后，您的用户名将显示在&quot;已加入账户&quot;列表中。</p>
                   </div>
                 )}
               </div>
