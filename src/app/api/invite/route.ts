@@ -12,12 +12,13 @@ interface APIErrorResponse {
   documentation_url?: string;
 }
 
-interface APISuccessResponse {
+// Either remove this interface if not needed or use it in the return type
+type APIResponse = {
   success: boolean;
   message?: string;
-}
+};
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
+export async function POST(request: NextRequest): Promise<NextResponse<APIResponse>> {
   try {
     const body = await request.json() as InviteRequestBody;
     const { username } = body;
