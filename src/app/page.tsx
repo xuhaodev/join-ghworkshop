@@ -3,8 +3,15 @@
 import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 
+// Define interface for member objects
+interface Member {
+  id: string | number;
+  login: string;
+  // Add other properties here if needed
+}
+
 export default function Home() {
-  const [members, setMembers] = useState([]);
+  const [members, setMembers] = useState<Member[]>([]);
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -40,7 +47,7 @@ export default function Home() {
       const response = await fetch('/api/members');
       const data = await response.json();
       if (Array.isArray(data)) {
-        setMembers(data);
+        setMembers(data as Member[]); // Type assertion to ensure type safety
       } else if (data.error) {
         setMessage(data.error);
       } else {
@@ -52,7 +59,7 @@ export default function Home() {
     }
   };
 
-  const handleInvite = async (e) => {
+  const handleInvite = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!username) {
       setMessage('请输入用户名');

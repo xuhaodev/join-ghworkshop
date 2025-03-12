@@ -40,6 +40,7 @@
   font-weight: 700;
   background: linear-gradient(to right, #2b6cb0, #4299e1);
   -webkit-background-clip: text;
+  background-clip: text; /* Standard property for compatibility */
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.5px;
   padding: 1rem 0;
