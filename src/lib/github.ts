@@ -1,12 +1,10 @@
 import { Octokit } from '@octokit/core';
-
-// Define a type for Octokit error responses
-interface OctokitError extends Error {
-  response?: {
-    data?: unknown;
-    status?: number;
-  };
-}
+import { 
+  OctokitError, 
+  GitHubTeamMember, 
+  GitHubTeam, 
+  GitHubSeatAssignment 
+} from '../types/github';
 
 // Create and configure Octokit instance
 export function createOctokit() {
@@ -16,7 +14,7 @@ export function createOctokit() {
 }
 
 // List GitHub team members
-export async function listTeamMembers(octokit: Octokit, org: string, team: string) {
+export async function listTeamMembers(octokit: Octokit, org: string, team: string): Promise<GitHubTeamMember[]> {
   try {
     const response = await octokit.request(`GET /orgs/${org}/teams/${team}/members`, {
       org: org,
@@ -26,7 +24,7 @@ export async function listTeamMembers(octokit: Octokit, org: string, team: strin
         'X-GitHub-Api-Version': '2022-11-28'
       }
     });
-    return response.data;
+    return response.data as GitHubTeamMember[];
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? 
       (error as OctokitError).response?.data || error.message : 
@@ -60,13 +58,13 @@ export async function inviteTeamMember(octokit: Octokit, orgName: string, teamNa
 }
 
 // Get team by name
-export async function getTeamByName(octokit: Octokit, orgName: string, teamName: string) {
+export async function getTeamByName(octokit: Octokit, orgName: string, teamName: string): Promise<GitHubTeam> {
   try {
     const teamsResponse = await octokit.request('GET /orgs/{org}/teams', {
       org: orgName
     });
     
-    const team = teamsResponse.data.find(team => team.name === teamName);
+    const team = teamsResponse.data.find(team => team.name === teamName) as GitHubTeam | undefined;
     if (!team) {
       throw new Error(`团队 ${teamName} 未找到`);
     }
@@ -82,7 +80,7 @@ export async function getTeamByName(octokit: Octokit, orgName: string, teamName:
 }
 
 // List seats assigned to the organization
-export async function listAssignedSeats(octokit: Octokit, orgName: string) {
+export async function listAssignedSeats(octokit: Octokit, orgName: string): Promise<GitHubSeatAssignment> {
   try {
     const response = await octokit.request(`GET /orgs/${orgName}/copilot/billing/seats`, {
       org: orgName,
@@ -90,7 +88,7 @@ export async function listAssignedSeats(octokit: Octokit, orgName: string) {
         'X-GitHub-Api-Version': '2022-11-28'
       }
     });
-    return response.data;
+    return response.data as GitHubSeatAssignment;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? 
       (error as OctokitError).response?.data || error.message : 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createOctokit, inviteTeamMember, getTeamByName, listTeamMembers } from "@/lib/github";
+import { OctokitError } from '../../../types/github';
 
 interface InviteRequestBody {
   username: string;
@@ -32,11 +33,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       // 邀请用户加入团队
       try {
         await inviteTeamMember(octokit, orgName, team.slug, username);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("邀请用户失败:", error);
         let errorMessage = '邀请用户失败';
-        if (error.response?.data?.message) {
-          errorMessage = error.response.data.message;
+        if ((error as any).response?.data?.message) {
+          errorMessage = (error as any).response.data.message;
         }
         return NextResponse.json({ error: errorMessage }, { status: 500 });
       }
@@ -55,13 +56,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         message: `成功邀请 ${username} 加入团队 ${teamName}`
       });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("GitHub API 错误:", error);
       let errorMessage = '操作失败';
-      if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error.message) {
-        errorMessage = error.message;
+      if ((error as any).response?.data?.message) {
+        errorMessage = (error as any).response.data.message;
+      } else if ((error as any).message) {
+        errorMessage = (error as any).message;
       }
       return NextResponse.json({ error: errorMessage }, { status: 500 });
     }

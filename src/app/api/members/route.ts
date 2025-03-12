@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createOctokit, listTeamMembers } from '@/lib/github';
+import { OctokitError } from '../../../types/github';
 
 export async function GET() {
   const orgName = process.env.GITHUB_ORG_NAME;
@@ -16,12 +17,11 @@ export async function GET() {
     const octokit = createOctokit();
     const members = await listTeamMembers(octokit, orgName, teamName);
     return NextResponse.json(members);
-  } catch (error: any) {
-    console.error('获取团队成员列表失败:', error);
-    let errorMessage = '获取团队成员列表失败';
-    if (error.response?.data?.message) {
-      errorMessage = error.response.data.message;
-    }
+  } catch (error: unknown) {
+  const errorMessage = error instanceof Error ? 
+      (error as OctokitError).response?.data || error.message : 
+      'Unknown error';
+    console.error('获取团队成员列表失败:', errorMessage);
     return NextResponse.json(
       { error: errorMessage },
       { status: 500 }
