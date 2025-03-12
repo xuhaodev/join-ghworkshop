@@ -38,6 +38,7 @@ export default function Home() {
       const response = await fetch('/api/config');
       const data = await response.json();
       setConfig(data);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_) {
       setMessage('获取配置信息失败');
     }
@@ -55,6 +56,7 @@ export default function Home() {
         setMessage('获取成员列表失败');
         console.error('Expected array but received:', data);
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_) {
       setMessage('获取成员列表失败');
     }
@@ -83,6 +85,7 @@ export default function Home() {
       } else {
         setMessage(data.error || '邀请失败');
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_) {
       setMessage('邀请过程中发生错误');
     } finally {
