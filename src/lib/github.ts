@@ -1,5 +1,13 @@
 import { Octokit } from '@octokit/core';
 
+// Define a type for Octokit error responses
+interface OctokitError extends Error {
+  response?: {
+    data?: unknown;
+    status?: number;
+  };
+}
+
 // Create and configure Octokit instance
 export function createOctokit() {
   return new Octokit({
@@ -21,7 +29,7 @@ export async function listTeamMembers(octokit: Octokit, org: string, team: strin
     return response.data;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? 
-      (error as any).response?.data || error.message : 
+      (error as OctokitError).response?.data || error.message : 
       'Unknown error';
     console.error('获取团队成员失败:', errorMessage);
     throw error;
@@ -44,7 +52,7 @@ export async function inviteTeamMember(octokit: Octokit, orgName: string, teamNa
     return response.data;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? 
-      (error as any).response?.data || error.message : 
+      (error as OctokitError).response?.data || error.message : 
       'Unknown error';
     console.error('邀请团队成员失败:', errorMessage);
     throw error;
@@ -66,7 +74,7 @@ export async function getTeamByName(octokit: Octokit, orgName: string, teamName:
     return team;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? 
-      (error as any).response?.data || error.message : 
+      (error as OctokitError).response?.data || error.message : 
       'Unknown error';
     console.error('获取团队信息失败:', errorMessage);
     throw error;
@@ -85,7 +93,7 @@ export async function listAssignedSeats(octokit: Octokit, orgName: string) {
     return response.data;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? 
-      (error as any).response?.data || error.message : 
+      (error as OctokitError).response?.data || error.message : 
       'Unknown error';
     console.error('获取席位分配失败:', errorMessage);
     throw error;
