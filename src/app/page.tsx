@@ -77,7 +77,7 @@ export default function Home() {
 
       const data = await response.json();
       if (data.success) {
-        setMessage(`成功邀请 ${username} 加入工作坊, 请检查您的 GitHub 组织页面接受邀请。`);
+        setMessage(`成功为 ${username} 发送邀请, 接下来请进入您的 GitHub 组织页面接受邀请。`);
         setUsername('');
         fetchMembers(); // 刷新成员列表
       } else {
