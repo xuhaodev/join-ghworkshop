@@ -119,7 +119,7 @@ export default function Home() {
               
               <div className={styles.introduction}>
                 <h2>Workshop自服务添加工具</h2>
-                <p>本工具帮助您快速加入 Workshop，获取 Workshop 相关内容和工具试用权限。输入您的 GitHub 用户名并点击&quot;加入工作坊&quot;按钮即可加入。</p>
+                <p>本工具帮助快速获取GitHub Copilot Business的试用权限。输入您的 GitHub 用户名并点击&quot;加入工作坊&quot;按钮，之后进入您的GitHub组织页面接受邀请即可加入。</p>
                 <button 
                   className={styles.guideButton} 
                   onClick={() => setShowGuide(!showGuide)}
