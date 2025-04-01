@@ -100,7 +100,7 @@ export default function Home() {
     <main className={styles.main}>
       <div className={styles.container}>
         <div className={styles.innerContainer}>
-          <h1 className={styles.title}>Join Workshop</h1>
+          <h1 className={styles.title}>Join GitHub Copilot Workshop</h1>
           
           <div className={styles.contentWrapper}>
             {/* 左侧内容: 工作区信息和介绍/操作指南 */}
